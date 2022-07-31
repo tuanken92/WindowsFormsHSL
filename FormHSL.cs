@@ -14,8 +14,8 @@ namespace WindowsFormsHSL
 {
     public partial class FormHSL : Form
     {
-        string ip = "192.168.1.222";
-        int port = 12289;
+        public string ip { get; set; } //= "192.168.1.115";
+        public int port { get; set; }// = 12289;
         private MelsecMcNet melsec_net = null;
     
         public string plc_type { get; set; }
@@ -33,16 +33,26 @@ namespace WindowsFormsHSL
         {
             InitializeComponent();
 
+            ip = "192.168.1.115";
+            port  = 12289;
+
+            IP_Txt.DataBindings.Add("Text", this, "ip");
+            Port_Txt.DataBindings.Add("Text", this, "port");
+
             plc_type = PLCType_Cbb.Text;
             plc_address = PLCAdress_Text.Text;
 
         }
 
+
+        
+
         private void Connect_Btn_Click(object sender, EventArgs e)
         {
             if(melsec_net == null)
                 melsec_net = new MelsecMcNet(ip, port);
-
+            melsec_net.IpAddress = ip;
+            melsec_net.Port = port;
             melsec_net.ConnectTimeOut = 2000;
             melsec_net.NetworkNumber = 0x00;//Network number
             melsec_net.NetworkStationNumber = 0x00;//Network station number
@@ -51,6 +61,8 @@ namespace WindowsFormsHSL
             if (connect.IsSuccess)
             {
                 MessageBox.Show("Connected successfully!");
+                //Connect_Btn.Enabled = false;
+                //Disconnect_Btn.Enabled = true;
             }
             else
             {
@@ -155,6 +167,16 @@ namespace WindowsFormsHSL
         private void PLCType_Cbb_SelectedIndexChanged(object sender, EventArgs e)
         {
             plc_type = PLCType_Cbb.Text;
+        }
+
+        private void Oct2Hex_Btn_Click(object sender, EventArgs e)
+        {
+           Hex_Txt.Text =  OctalConverter.octal2hex(Octal_Txt.Text);
+        }
+
+        private void Hex2Oct_Btn_Click(object sender, EventArgs e)
+        {
+            Octal_Txt.Text = OctalConverter.hex2Octal(Hex_Txt.Text);
         }
     }
 }
